@@ -1,4 +1,3 @@
-# player_bios.py - scraps data from stats.nba.com and inserts into player_bios table within MySQL nba stats database
 import requests
 import pandas as pd
 
@@ -34,7 +33,7 @@ nbaDf = nbaDf.loc[(nbaDf['gameType'] == 'Showdown Captain Mode') | (nbaDf['gameT
 stringGone = nbaDf['n'].str.extract('.*\((.*)\).*')
 nbaDf = pd.merge(nbaDf, stringGone, left_index=True, right_index=True, how='inner')
 nbaDf.loc[nbaDf['n'] != 'NBA', 'n'] = sport
-nbaDf.columns = ['Sport', 'GameId', 'Type', 'Time', 'Team']
+nbaDf.columns = ['Sport', 'DraftGroup', 'Type', 'Time', 'Team']
 nbaDf['Team'] = nbaDf['Team'].fillna('N/A')
 nbaDf.to_csv('contestInfo.csv', index=False)
 
