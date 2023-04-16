@@ -2,9 +2,9 @@ import requests
 import pandas as pd
 
 
-class NBAStats:
+class NBAStatsClass:
 
-    def getNBAstats():
+    def getNBAstats(self, season_year, mode, type):
 
 
         headers = {
@@ -20,19 +20,19 @@ class NBAStats:
             'Accept-Language': 'en-US,en;q=0.9',
         }
 
-        season = '2022-23'
+        season = season_year
 
 
         # per_mode = 'Per100Possessions'
         # per_mode = 'Totals'
         # per_mode = 'Per36'
-        per_mode = 'PerGame'
+        per_mode = mode
 
-        season_type = 'Regular%20Season'
+        season_type = type
         # season_type = 'PlayIn'
         # season_type = 'Playoffs'
 
-        nba_url = f'https://stats.nba.com/stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=&DateTo=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=00&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season={season}&SeasonSegment=&SeasonType={season_type}&ShotClockRange=&StarterBench=&TeamID=0&VsConference=&VsDivision=&Weight='
+        nba_url = f'https://stats.nba.com/stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=&DateTo=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=00&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PaceAdjust=N&PerMode={per_mode}&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season={season}&SeasonSegment=&SeasonType={season_type}&ShotClockRange=&StarterBench=&TeamID=0&VsConference=&VsDivision=&Weight='
         #     # json response
         response = requests.get(url=nba_url, headers=headers).json()
         #     # pulling just the data we want
@@ -105,10 +105,8 @@ class NBAStats:
         TPGpoints = nbaDf['TOV'] * -0.5
 
 
-        jackFPTs = PPGpoints + ThreesPGpoints + RBGpoints + APGpoints + \
-            SPGpoints + BPGpoints + TPGpoints + nbaDf['extraPts']
+        jackFPTs = PPGpoints + ThreesPGpoints + RBGpoints + APGpoints + SPGpoints + BPGpoints + TPGpoints + nbaDf['extraPts']
         nbaDf['jackDKavgFPTs'] = round(jackFPTs, 2)
         nbaDf = nbaDf[['PLAYER_NAME', 'TEAM_ABBREVIATION', 'MIN', 'jackDKavgFPTs']]
         nbaDf.rename(columns={'PLAYER_NAME': 'displayName'}, inplace=True)
-        nbaDf.to_csv(
-            f'{season}{seasonNameFormatter(season_type)}{per_mode}NBA_Data.csv', index=False)
+        return nbaDf

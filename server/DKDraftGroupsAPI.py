@@ -1,41 +1,25 @@
 import requests
 import pandas as pd
 
-season = '2022-23'
+class SportContests:
+    def getSportGroupIds(self, sportName):
 
-#per_mode = 'Per100Possessions'
-#per_mode = 'Totals'
-#per_mode = 'Per36'
-per_mode = 'PerGame'
+        sport = sportName
 
-season_type = 'Regular%20Season'
-#season_type = 'PlayIn'
-#season_type = 'Playoffs'
+        website_url = f'https://www.draftkings.com/lobby/getcontests?sport={sport}'
+        response = requests.get(url=website_url).json()
 
-sport = 'NBA'
-#sport = 'MLB'
+        contest_info = response['Contests']
 
-website_url = f'https://www.draftkings.com/lobby/getcontests?sport={sport}'
-#     # json response
-response = requests.get(url=website_url).json()
-
-contest_info = response['Contests']
-
-
-def seasonNameFormatter(word):
-    if word == 'Regular%20Season':
-        return 'RegSeason'
-    else: return word
-
-nbaDf = pd.DataFrame(contest_info)
-nbaDf = nbaDf[['n', 'dg', 'gameType', 'sdstring']].drop_duplicates(subset=['dg'])
-nbaDf = nbaDf.loc[(nbaDf['gameType'] == 'Showdown Captain Mode') | (nbaDf['gameType'] == 'Classic')]
-stringGone = nbaDf['n'].str.extract('.*\((.*)\).*')
-nbaDf = pd.merge(nbaDf, stringGone, left_index=True, right_index=True, how='inner')
-nbaDf.loc[nbaDf['n'] != 'NBA', 'n'] = sport
-nbaDf.columns = ['Sport', 'DraftGroup', 'Type', 'Time', 'Team']
-nbaDf['Team'] = nbaDf['Team'].fillna('N/A')
-nbaDf.to_csv('contestInfo.csv', index=False)
+        nbaDf = pd.DataFrame(contest_info)
+        nbaDf = nbaDf[['n', 'dg', 'gameType', 'sdstring']].drop_duplicates(subset=['dg'])
+        nbaDf = nbaDf.loc[(nbaDf['gameType'] == 'Showdown Captain Mode') | (nbaDf['gameType'] == 'Classic')]
+        stringGone = nbaDf['n'].str.extract('.*\((.*)\).*')
+        nbaDf = pd.merge(nbaDf, stringGone, left_index=True, right_index=True, how='inner')
+        nbaDf.loc[nbaDf['n'] != 'NBA', 'n'] = sport
+        nbaDf.columns = ['Sport', 'DraftGroup', 'Type', 'Time', 'Team']
+        nbaDf['Team'] = nbaDf['Team'].fillna('N/A')
+        return nbaDf
 
 
 
