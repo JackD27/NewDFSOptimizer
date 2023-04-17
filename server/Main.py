@@ -2,12 +2,13 @@ import NBAStats
 import DKDraftablesAPI 
 import DKDraftGroupsAPI
 import pandas as pd
+import color
 
 draftGroupsDf =  DKDraftGroupsAPI.SportContests().getSportGroupIds('NBA')
 print(draftGroupsDf)
 
 nbaStatsDf = NBAStats.NBAStatsClass().getNBAstats('2022-23', 'PerGame', 'Regular%20Season')
-draftablesDf = DKDraftablesAPI.DKDraftables().getDKDraftables(85804)
+draftablesDf = DKDraftablesAPI.DKDraftables().getDKDraftables(85754)
 
 finalDf = pd.merge(nbaStatsDf, draftablesDf)
 finalDf.loc[finalDf['status'] == 'OUT', 'jackDKavgFPTs'] = 0
@@ -35,15 +36,19 @@ word = str(finalDf2['Team'][1]).replace(" ","")
 finalDf2.to_csv('final.csv', index=False)
 editable.to_csv(f'{word}editThis.csv', index=False)
 
-newEditedData = pd.read_csv(f'{word}editWasMade.csv')
-
-idk = pd.merge(finalDf2, newEditedData)
-
-idk.loc[(idk['Type'] == 'Showdown Captain Mode') & (idk['rosterSlotId'] == 476), 'newAvgPoints'] = idk['newAvgPoints'] * 1.5
+try:
+    newEditedData = pd.read_csv(f'{word}editWasMade.csv')
 
 
+    idk = pd.merge(finalDf2, newEditedData)
 
-idk.to_csv(f'{word}_Final.csv', index=False)
+    idk.loc[(idk['Type'] == 'Showdown Captain Mode') & (idk['rosterSlotId'] == 476), 'newAvgPoints'] = idk['newAvgPoints'] * 1.5
+
+
+
+    idk.to_csv(f'{word}_Final.csv', index=False)
+except:
+    print(f"{color.bcolors.FAIL}CSV file doesn't exist. Most likely {word}editWasMade.csv file hasn't been created.{color.bcolors.ENDC}")
 
 
 
