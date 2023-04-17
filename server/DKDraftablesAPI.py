@@ -23,5 +23,6 @@ class DKDraftables:
         final = pd.merge(final2, testing1['draftableId'], left_index=True, right_index=True)
         final = final[['value', 'draftableId']]
         final4 = pd.merge(nbaDf, final).drop(columns=['draftStatAttributes'])
+        final4['DraftGroup'] = group
         final4.loc[final4['value'].str.contains('th') | (final4['status'] == 'OUT'), 'value'] = 0
         return final4
