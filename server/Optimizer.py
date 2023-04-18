@@ -1,7 +1,7 @@
 import pulp
 import pandas as pd
     
-data_file = 'MINvsDEN_Final.csv'
+data_file = 'NYKvsCLE_Final.csv'
 
 df = pd.read_csv(data_file, index_col=['displayName', 'pos'], skipinitialspace=True)
 
@@ -15,6 +15,7 @@ costs = df['salary'].to_dict()
 values = df['newAvgPoints'].to_dict()
 team = df['teamAbbreviation'].to_dict()
 pos = df['position'].to_dict()
+mins = df['newMins'].to_dict()
 
 # set up LP
 draft = pulp.LpVariable.dicts('selected', legal_assignments, cat='Binary')
@@ -46,7 +47,7 @@ for names in removeNames:
 
 
 
-prob += pulp.lpSum([draft[n, p]*values[n,p] for (n, p) in legal_assignments]) <= 1000
+prob += pulp.lpSum([draft[n, p]*values[n,p] for (n, p) in legal_assignments]) <= 246.49
 
 prob.solve()
 
@@ -59,6 +60,7 @@ for idx in draft:
                         'Salary': costs[idx],
                         'Role': idx[1],
                         'PPG': values[idx],
+                        'Minutes': mins[idx],
                         'Position': pos[idx],
                         'Team': team[idx]
                 })
