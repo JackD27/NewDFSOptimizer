@@ -109,4 +109,5 @@ class NBAStatsClass:
         nbaDf['jackDKavgFPTs'] = round(jackFPTs, 2)
         nbaDf = nbaDf[['PLAYER_NAME', 'TEAM_ABBREVIATION', 'MIN', 'jackDKavgFPTs']]
         nbaDf.rename(columns={'PLAYER_NAME': 'displayName'}, inplace=True)
+        nbaDf.loc[nbaDf['displayName'] == 'Robert Williams III', 'displayName'] = 'Robert Williams'
         return nbaDf

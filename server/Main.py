@@ -6,9 +6,10 @@ import color
 
 draftGroupsDf =  DKDraftGroupsAPI.SportContests().getSportGroupIds('NBA')
 print(draftGroupsDf)
-
-nbaStatsDf = NBAStats.NBAStatsClass().getNBAstats('2022-23', 'PerGame', 'Regular%20Season')
-draftablesDf = DKDraftablesAPI.DKDraftables().getDKDraftables(85819)
+lol = 'Regular%20Season'
+lol1 = 'Playoffs'
+nbaStatsDf = NBAStats.NBAStatsClass().getNBAstats('2022-23', 'PerGame', lol1)
+draftablesDf = DKDraftablesAPI.DKDraftables().getDKDraftables(87121)
 
 finalDf = pd.merge(nbaStatsDf, draftablesDf)
 finalDf.loc[finalDf['status'] == 'OUT', 'jackDKavgFPTs'] = 0
@@ -31,6 +32,7 @@ editable = finalDf2[['displayName', 'teamAbbreviation', 'jackDKavgFPTs', 'PPM']]
 editable = editable.drop_duplicates(subset='displayName')
 editable = editable.assign(newMins=None, newAvgPoints=None, sportsLineMins=None, sportsLineAvgPoints=None)
 
+
 try:
     word = str(finalDf2['Team'][1]).replace(" ","")
     editable.to_csv(word+'editThis.csv', index=False)
@@ -38,6 +40,7 @@ except:
     editable.to_csv('ClassicEditThis.csv', index=False)
 
 finalDf2.to_csv('final.csv', index=False)
+
 
 try:
     newEditedData = pd.read_csv(f'{word}editWasMade.csv')

@@ -1,7 +1,7 @@
 import pulp
 import pandas as pd
     
-data_file = 'NYKvsCLE_Final.csv'
+data_file = 'LALvsDEN_Final.csv'
 
 df = pd.read_csv(data_file, index_col=['displayName', 'pos'], skipinitialspace=True)
 
@@ -39,16 +39,21 @@ for name in name_set:
     prob += pulp.lpSum([draft[n, p] for (n, p) in legal_assignments if n == name]) <=1
     
 
+addNames = []
+
+
+for names in addNames:
+    prob += pulp.lpSum([draft[n, p] for (n, p) in legal_assignments if n == names]) == 1
+
 removeNames = []
 
 
 for names in removeNames:
-    prob += pulp.lpSum([draft[n, p] for (n, p) in legal_assignments if n == names]) == 1
+    prob += pulp.lpSum([draft[n, p] for (n, p) in legal_assignments if n == names]) == 0
 
 
 
-prob += pulp.lpSum([draft[n, p]*values[n,p] for (n, p) in legal_assignments]) <= 246.49
-
+prob += pulp.lpSum([draft[n, p]*values[n,p] for (n, p) in legal_assignments]) <= 500
 prob.solve()
 
 lineup = []
@@ -66,7 +71,7 @@ for idx in draft:
                 })
         
 lineups = pd.DataFrame(lineup)
-lineups = lineups.sort_values(by=['Role'])
+lineups = lineups.sort_values(by=['Role', 'PPG'], ascending=[True, False])
 totalMoney = lineups['Salary'].sum()
 totalPoints = lineups['PPG'].sum()
 print(lineups)

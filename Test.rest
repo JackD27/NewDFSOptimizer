@@ -1,0 +1,19 @@
+GET http://localhost:5000
+Accept: application/json 
+
+###
+GET http://localhost:5000/getDraftGroup/NBA
+Accept: application/json 
+
+###
+
+POST http://localhost:5000/getEdittableCSV
+Content-Type: application/json 
+
+{
+    "sportName" : "NBA",
+    "season" : "2022-23",
+    "perMode" : "PerGame",
+    "seasonType" : "Playoffs",
+    "draftGroup" : 86995
+}
