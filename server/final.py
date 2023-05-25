@@ -2,18 +2,24 @@ import NBAStats
 import DKDraftablesAPI 
 import DKDraftGroupsAPI
 import pandas as pd
-import color
-import requests
 
 class FinalCSV:
     ref = ['2022-23', 'PerGame', 'Playoffs']
     def getFinalCSV(self, sportName, season, perMode, seasonType, draftGroup):
+
+        if sportName == 'NBA':
+            statsDf = NBAStats.NBAStatsClass().getNBAstats(season, perMode, seasonType)
+        elif sportName == 'WNBA':
+            statsDf = NBAStats.NBAStatsClass().getWNBAstats(season, perMode, seasonType)
+
+        
+
         draftGroupsDf =  DKDraftGroupsAPI.SportContests().getSportGroupIds(sportName)
 
-        nbaStatsDf = NBAStats.NBAStatsClass().getNBAstats(season, perMode, seasonType)
+       
         draftablesDf = DKDraftablesAPI.DKDraftables().getDKDraftables(draftGroup)
 
-        finalDf = pd.merge(nbaStatsDf, draftablesDf)
+        finalDf = pd.merge(statsDf, draftablesDf)
         finalDf.loc[finalDf['status'] == 'OUT', 'jackDKavgFPTs'] = 0
 
 

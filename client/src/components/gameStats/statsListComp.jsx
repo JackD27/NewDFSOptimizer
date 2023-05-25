@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router";
 import axios from 'axios'
 import AlertFunction from "../misc/alertFunction";
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import {Table, Form, Card, Button, Row, Col} from 'react-bootstrap'
 
 
@@ -39,12 +39,14 @@ export default function StatsList() {
 }
 
   const headers = [
-    { label: "Name", key: "displayName" },
-    { label: "Team", key: "teamAbbreviation" },
-    { label: "AvgPoints", key: "jackDKavgFPTs" },
+    { label: "displayName", key: "displayName" },
+    { label: "teamAbbreviation", key: "teamAbbreviation" },
+    { label: "jackDKavgFPTs", key: "jackDKavgFPTs" },
     { label: "PPM", key: "PPM" },
-    { label: "Mins", key: "newMins" },
-    { label: "NewPoints", key: "newAvgPoints" }
+    { label: "newMins", key: "newMins" },
+    { label: "newAvgPoints", key: "newAvgPoints" },
+    { label: "sportsLineMins", key: "sportsLineMins" },
+    { label: "sportsLineAvgPoints", key: "sportsLineAvgPoints" }
 ];
 
   async function getStats() {
@@ -197,7 +199,6 @@ function handlePPMSort(){
   }
   //if (!user) return (<div><h3>You are not authorized to view this page, Please Login in <Link to={'/login'}><a href='#'>here</a></Link></h3></div>)
 
-  // This following section will display the table with the records of individuals and all their followers.
   return (
     <>
     <Card style={{marginTop: '10px', marginBottom: '10px'}} bg="secondary">
@@ -209,7 +210,6 @@ function handlePPMSort(){
       <Form.Group className="mb-3" controlId="formBasicSeason">
         <Form.Label style={{color: "white"}}>Season</Form.Label>
         <Form.Select onChange={(e)=> {setSeason(e.target.value); setVisible(false)}} value={seasonValue}>
-          <option></option>
           <option>2022-23</option>
           <option>2021-22</option>
           <option>2023-24</option>
@@ -220,19 +220,18 @@ function handlePPMSort(){
       <Form.Group className="mb-3" controlId="formBasicSeasonType">
         <Form.Label style={{color: "white"}}>Season Type</Form.Label>
         <Form.Select onChange={(e)=> {setSeasonType(e.target.value); setVisible(false)}} value={seasonTypeValue}>
-          <option></option>
           <option>Playoffs</option>
           <option>Regular%20Season</option>
         </Form.Select>
       </Form.Group>
       </Col>
       </Row>
-      <Button variant="success" type="submit" onClick={handleSubmit}>Submit</Button>
+      <Button variant="success" type="submit" onClick={handleSubmit}>Get Stats</Button>
       <Button variant="success" style={{marginLeft: '10px'}} onClick={handleCSVDownload}>{`Download CSV for ${word()}`}</Button>
       <CSVLink
         headers={headers}
         data={stats}
-        filename={`${word()}transactions.csv`}
+        filename={`${word()}editThis.csv`}
         className='hidden'
         ref={csvLink}
         target='_blank'

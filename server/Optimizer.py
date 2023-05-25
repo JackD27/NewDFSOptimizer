@@ -1,7 +1,7 @@
 import pulp
 import pandas as pd
     
-data_file = 'LALvsDEN_Final.csv'
+data_file = 'MIAvsBOS_Final.csv'
 
 df = pd.read_csv(data_file, index_col=['displayName', 'pos'], skipinitialspace=True)
 
