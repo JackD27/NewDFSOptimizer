@@ -20,7 +20,7 @@ Content-Type: application/json
     "season" : "2022-23",
     "perMode" : "PerGame",
     "seasonType" : "Playoffs",
-    "draftGroup" : 87351
+    "draftGroup" : 87852
 }
 
 ###

@@ -3,7 +3,9 @@ import { useParams } from "react-router";
 import axios from 'axios'
 import AlertFunction from "../misc/alertFunction";
 import { CSVLink } from "react-csv";
-import {Table, Form, Card, Button, Row, Col} from 'react-bootstrap'
+import {Table, Form, Card, Button, Row, Col, Fragment} from 'react-bootstrap'
+import PlayerReadRow from "./playerReadRow";
+import PlayerEditRow from "./playerEditRow";
 
 
 // The FollowerList component.  This is the main component in this file.
@@ -19,6 +21,7 @@ export default function StatsList() {
 
   const [nameSort, setNameSort] = useState(false);
   const [numberSort, setNumberSort] = useState(false);
+  const [newPointsSort, setNewPointsSort] = useState(false);
   const [ppmSort, setPPMSort] = useState(false);
 
   const [seasonValue, setSeason] = useState('2022-23');
@@ -61,7 +64,6 @@ export default function StatsList() {
     try{
     const response = await axios.post(`http://localhost:5000/getEdittableCSV`, values);
     setStats(response.data);
-    console.log(response.data)
     }catch(error){
       setError(true);
       console.log(error)
@@ -82,7 +84,7 @@ export default function StatsList() {
 
 
   
-
+console.log(stats)
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -90,7 +92,6 @@ export default function StatsList() {
     try {
       
       getStats();
-      console.log(seasonValue, seasonTypeValue)
       setError(false);
       setVisible(true);
     } catch (error) {
@@ -116,6 +117,7 @@ export default function StatsList() {
   }, []);  
 
 
+  // Name sorting
   function handleNameSortAsc(){
     const sortNamesAscending = [...stats].sort((a, b) =>
     a.displayName > b.displayName ? 1 : -1,
@@ -133,21 +135,39 @@ export default function StatsList() {
     (nameSort ? handleNameSortAsc() : handleNameSortDesc())
   }
 
-function handleAVGPointsSortAsc(){
+  // Average points sorting
+function handleAvgPointsSortAsc(){
   const sortAvgPoints = [...stats].sort((a, b) => a.jackDKavgFPTs - b.jackDKavgFPTs);
   setStats(sortAvgPoints);
 }
 
-function handleAVGPointsSortDesc(){
+function handleAvgPointsSortDesc(){
   const sortAvgPoints = [...stats].sort((a, b) => b.jackDKavgFPTs - a.jackDKavgFPTs);
   setStats(sortAvgPoints);
 }
 
 function handleAvgPointsSort(){
   setNumberSort(!numberSort);
-  (numberSort ? handleAVGPointsSortAsc() : handleAVGPointsSortDesc())
+  (numberSort ? handleAvgPointsSortAsc() : handleAvgPointsSortDesc())
 }
 
+// New points sorting
+function handleNewPointsSortAsc(){
+  const sortNewPoints = [...stats].sort((a, b) => a.newAvgPoints - b.newAvgPoints);
+  setStats(sortNewPoints);
+}
+
+function handleNewPointsSortDesc(){
+  const sortNewPoints = [...stats].sort((a, b) => b.newAvgPoints - a.newAvgPoints);
+  setStats(sortNewPoints);
+}
+
+function handleNewPointsSort(){
+  setNewPointsSort(!newPointsSort);
+  (newPointsSort ? handleNewPointsSortAsc() : handleNewPointsSortDesc())
+}
+
+// PPM sorting
 function handlePPMSortDesc(){
   const sortPPMpoints = [...stats].sort((a, b) => b.PPM - a.PPM);
   setStats(sortPPMpoints);
@@ -162,34 +182,106 @@ function handlePPMSort(){
   setPPMSort(!ppmSort);
   (ppmSort ? handlePPMSortAsc() : handlePPMSortDesc())
 }
-  
+
+  const handleCancelClick = () => {
+    setEditPlayerId(null);
+  };
 
 
-  const Player = ({image, name, team, AvgPoints, PPM, newMins, newAvgPoints}) => (
-    <tr>
-      <td style={{width: "7%"}}><img src={image} alt="N/A" style={{ width: '80%', height: '100%' }}/></td>
-      <td style={{width: "16%"}}>{name}</td>
-      <td style={{width: "5%"}}>{team}</td>
-      <td style={{width: "8%"}}>{AvgPoints}</td>
-      <td style={{width: "7%"}}>{PPM}</td>
-      <td style={{width: "5%"}}>{newMins}</td>
-      <td>{newAvgPoints}</td>
-    </tr>
-  );
+  const handleEditClick = (event, player) => {
+    event.preventDefault();
+    setEditPlayerId(player.playerDkId);
+
+    const formValues = {
+      playerDkId: player.playerDkId,
+      playerImage160: player.playerImage160,
+      displayName: player.displayName,
+      teamAbbreviation: player.teamAbbreviation,
+      jackDKavgFPTs: player.jackDKavgFPTs,
+      PPM: player.PPM,
+      newMins: "",
+      Team: player.Team,
+      sportsLineMins: player.sportsLineMins,
+      sportsLineAvgPoints: player.sportsLineAvgPoints,
+      newAvgPoints: player.newAvgPoints,
+    };
+
+    setEditPlayerData(formValues);
+  };
+
+  const handleEditFormSubmit = (event) => {
+    event.preventDefault();
+
+    const editedPlayer = {
+      playerDkId: editPlayerId,
+      playerImage160: editPlayerData.playerImage160,
+      displayName: editPlayerData.displayName,
+      teamAbbreviation: editPlayerData.teamAbbreviation,
+      jackDKavgFPTs: editPlayerData.jackDKavgFPTs,
+      PPM: editPlayerData.PPM,
+      newMins: editPlayerData.newMins,
+      Team: editPlayerData.Team,
+      sportsLineMins: editPlayerData.sportsLineMins,
+      sportsLineAvgPoints: editPlayerData.sportsLineAvgPoints,
+      newAvgPoints: (editPlayerData.PPM * editPlayerData.newMins).toFixed(2),
+    };
+
+    const newStats = [...stats];
+
+    const index = stats.findIndex((player) => player.playerDkId === editPlayerId);
+
+    newStats[index] = editedPlayer;
+
+    setStats(newStats);
+    setEditPlayerId(null);
+  };
+
+  const handleEditFormChange = (event) => {
+    event.preventDefault();
+
+    const fieldName = event.target.getAttribute("name");
+    const fieldValue = event.target.value;
+
+    const newFormData = { ...editPlayerData };
+    newFormData[fieldName] = fieldValue;
+
+    setEditPlayerData(newFormData);
+  };
+
+  const [editPlayerData, setEditPlayerData] = useState({
+      playerDkId: "",
+      playerImage160: "",
+      displayName: "",
+      teamAbbreviation: "",
+      jackDKavgFPTs: "",
+      PPM: "",
+      newMins: "",
+      Team: "",
+      sportsLineMins: "",
+      sportsLineAvgPoints: "",
+      newAvgPoints: "",
+  });
+
+  const [editPlayerId, setEditPlayerId] = useState(null);
   
 
   function playerList() {
     return stats.map((player) => {
       return (
-        <Player
-          image={player.playerImage160}
-          name={player.displayName}
-          team={player.teamAbbreviation}
-          AvgPoints={player.jackDKavgFPTs}
-          PPM={player.PPM}
-          newMins={player.newMins}
-          newAvgPoints={player.newAvgPoints}
-        />
+        <>
+                {editPlayerId === player.playerDkId ? (
+                  <PlayerEditRow
+                    editFormData={editPlayerData}
+                    handleEditFormChange={handleEditFormChange}
+                    handleCancelClick={handleCancelClick}
+                  />
+                ) : (
+                  <PlayerReadRow
+                    player={player}
+                    handleEditClick={handleEditClick}
+                  />
+                )}
+              </>
       );
     });
   }
@@ -231,7 +323,7 @@ function handlePPMSort(){
       <CSVLink
         headers={headers}
         data={stats}
-        filename={`${word()}editThis.csv`}
+        filename={`${word()}editWasMade.csv`}
         className='hidden'
         ref={csvLink}
         target='_blank'
@@ -243,20 +335,23 @@ function handlePPMSort(){
     </Card>
     <div>
       <h1 style={{ textAlign: "center" }}>Player Stats</h1>
+      <form onSubmit={handleEditFormSubmit}>
       <Table className="table table-striped" responsive='sm' style={{ marginTop: 20 }}>
         <thead>
           <tr style={{fontSize: '15px'}}>
+            <th>ID</th>
             <th></th>
             <th style={{cursor: "pointer"}} onClick={handleNameSort}>Name</th>
             <th>Team</th>
             <th style={{cursor: "pointer"}} onClick={handleAvgPointsSort}>Avg Points</th>
             <th style={{cursor: "pointer"}} onClick={handlePPMSort}>PPM</th>
             <th>Mins</th>
-            <th>newPoints</th>
+            <th style={{cursor: "pointer"}} onClick={handleNewPointsSort}>Expected Points</th>
           </tr>
         </thead>
         <tbody>{playerList()}</tbody>
       </Table>
+      </form>
     </div>
     </>
   );

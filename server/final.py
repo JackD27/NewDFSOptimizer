@@ -36,9 +36,9 @@ class FinalCSV:
         finalDf2.loc[(finalDf2['Type'] == 'Showdown Captain Mode') & (finalDf2['rosterSlotId'] == 475), 'pos'] = 'UTIL'
 
         finalDf2 = finalDf2.dropna()
-        editable = finalDf2[['displayName', 'teamAbbreviation', 'jackDKavgFPTs', 'PPM', 'playerImage160', 'Team']]
+        editable = finalDf2[['playerDkId','displayName', 'teamAbbreviation', 'jackDKavgFPTs', 'PPM', 'playerImage160', 'Team']]
         editable = editable.drop_duplicates(subset='displayName')
-        editable = editable.assign(newMins=None, newAvgPoints=None, sportsLineMins=None, sportsLineAvgPoints=None)
+        editable = editable.assign(newMins=0, newAvgPoints=None, sportsLineMins=0, sportsLineAvgPoints=None)
 
         return editable
 
