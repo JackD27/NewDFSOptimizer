@@ -24,7 +24,8 @@ def getEdditableCSV():
     perMode = data['perMode']
     seasonType = data['seasonType']
     draftGroup = data['draftGroup']
-    edittableCSV =  final.FinalCSV().getFinalCSV(sportName, season, perMode, seasonType, draftGroup)
+    realSport = data['realSport']
+    edittableCSV =  final.FinalCSV().getFinalCSV(sportName, season, perMode, seasonType, draftGroup, realSport)
     return Response(edittableCSV.to_json(orient="records"), mimetype='application/json')
 
 if __name__ == '__main__':

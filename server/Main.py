@@ -9,7 +9,7 @@ print(draftGroupsDf)
 lol = 'Regular%20Season'
 lol1 = 'Playoffs'
 nbaStatsDf = NBAStats.NBAStatsClass().getNBAstats('2022-23', 'PerGame', lol1)
-draftablesDf = DKDraftablesAPI.DKDraftables().getDKDraftables(87852)
+draftablesDf = DKDraftablesAPI.DKDraftables().getDKDraftables(87922)
 
 finalDf = pd.merge(nbaStatsDf, draftablesDf)
 finalDf.loc[finalDf['status'] == 'OUT', 'jackDKavgFPTs'] = 0

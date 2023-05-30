@@ -29,9 +29,10 @@ POST http://localhost:5000/getEdittableCSV
 Content-Type: application/json 
 
 {
-    "sportName" : "WNBA",
+    "sportName" : "NBA",
     "season" : 2023,
     "perMode" : "PerGame",
     "seasonType" : "Regular+Season",
-    "draftGroup" : 87448
+    "draftGroup" : 87708,
+    "realSport" : "WNBA"
 }

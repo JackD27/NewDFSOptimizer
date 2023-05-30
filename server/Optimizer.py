@@ -1,6 +1,9 @@
 import pulp
 import pandas as pd
+import locale
     
+
+locale.setlocale(locale.LC_ALL, '')
 data_file = 'MIAvsBOS_Final.csv'
 
 df = pd.read_csv(data_file, index_col=['displayName', 'pos'], skipinitialspace=True)
@@ -53,13 +56,20 @@ for names in removeNames:
 
 
 
+
 prob += pulp.lpSum([draft[n, p]*values[n,p] for (n, p) in legal_assignments]) <= 500
 prob.solve()
 
+
 lineup = []
+
+points = 0
+money = 0
 
 for idx in draft:
     if draft[idx].varValue:
+        points += values[idx]
+        money += costs[idx]
         lineup.append({
                         'Name': idx[0],
                         'Salary': costs[idx],
@@ -67,14 +77,16 @@ for idx in draft:
                         'PPG': values[idx],
                         'Minutes': mins[idx],
                         'Position': pos[idx],
-                        'Team': team[idx]
+                        'Team': team[idx],   
                 })
+    
+def format(x):
+    return "${}".format(x)
         
 lineups = pd.DataFrame(lineup)
 lineups = lineups.sort_values(by=['Role', 'PPG'], ascending=[True, False])
-totalMoney = lineups['Salary'].sum()
-totalPoints = lineups['PPG'].sum()
+lineups['Salary'] = lineups['Salary'].apply(format)
 print(lineups)
         
-print("Total used amount of salary cap:", totalMoney, "Amount remaining: ", 50000 - totalMoney)
-print("Projected points for the game: ", round(totalPoints, 2))
+print("Total used amount of salary cap:", locale.currency(money), "Amount remaining: ", locale.currency(50000 - money))
+print("Projected points for the game: ", round(points, 2))

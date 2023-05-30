@@ -5,16 +5,16 @@ import pandas as pd
 
 class FinalCSV:
     ref = ['2022-23', 'PerGame', 'Playoffs']
-    def getFinalCSV(self, sportName, season, perMode, seasonType, draftGroup):
+    def getFinalCSV(self, sportName, season, perMode, seasonType, draftGroup, realSport):
 
-        if sportName == 'NBA':
+        if realSport == 'NBA':
             statsDf = NBAStats.NBAStatsClass().getNBAstats(season, perMode, seasonType)
-        elif sportName == 'WNBA':
+        elif realSport == 'WNBA':
             statsDf = NBAStats.NBAStatsClass().getWNBAstats(season, perMode, seasonType)
 
         
 
-        draftGroupsDf =  DKDraftGroupsAPI.SportContests().getSportGroupIds(sportName)
+        draftGroupsDf =  DKDraftGroupsAPI.SportContests().getSportGroupIds(realSport)
 
        
         draftablesDf = DKDraftablesAPI.DKDraftables().getDKDraftables(draftGroup)

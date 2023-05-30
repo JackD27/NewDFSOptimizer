@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import axios from 'axios'
 import AlertFunction from "../misc/alertFunction";
 import { CSVLink } from "react-csv";
-import {Table, Form, Card, Button, Row, Col, Fragment} from 'react-bootstrap'
+import {Table, Form, Card, Button, Row, Col} from 'react-bootstrap'
 import PlayerReadRow from "./playerReadRow";
 import PlayerEditRow from "./playerEditRow";
 
@@ -26,6 +26,7 @@ export default function StatsList() {
 
   const [seasonValue, setSeason] = useState('2022-23');
   const [seasonTypeValue, setSeasonType] = useState('Playoffs');
+  const [sportValue, setSport] = useState('NBA');
 
   const params = useParams();
 
@@ -60,6 +61,7 @@ export default function StatsList() {
         perMode: 'PerGame',
         seasonType: seasonTypeValue,
         draftGroup: Number(params.gameId),
+        realSport: sportValue,
       };
     try{
     const response = await axios.post(`http://localhost:5000/getEdittableCSV`, values);
@@ -302,9 +304,20 @@ function handlePPMSort(){
       <Form.Group className="mb-3" controlId="formBasicSeason">
         <Form.Label style={{color: "white"}}>Season</Form.Label>
         <Form.Select onChange={(e)=> {setSeason(e.target.value); setVisible(false)}} value={seasonValue}>
-          <option>2022-23</option>
-          <option>2021-22</option>
-          <option>2023-24</option>
+        {sportValue === 'NBA' ? (
+                  <>
+                  <option>2022-23</option>
+                  <option>2021-22</option>
+                  <option>2023-24</option>
+                  </>
+                ) : (
+                  <>
+                  <option>2023</option>
+                  <option>2022</option>
+                  <option>2021</option>
+                  </>
+                )}
+          
         </Form.Select>
       </Form.Group>
       </Col>
@@ -312,8 +325,26 @@ function handlePPMSort(){
       <Form.Group className="mb-3" controlId="formBasicSeasonType">
         <Form.Label style={{color: "white"}}>Season Type</Form.Label>
         <Form.Select onChange={(e)=> {setSeasonType(e.target.value); setVisible(false)}} value={seasonTypeValue}>
-          <option>Playoffs</option>
-          <option>Regular%20Season</option>
+                {sportValue === 'NBA' ? (
+                  <>
+                  <option>Playoffs</option>
+                  <option>Regular%20Season</option>
+                  </>
+                ) : (
+                  <>
+                  <option></option>
+                  <option>Regular+Season</option>
+                  </>
+                )}
+      </Form.Select>
+      </Form.Group>
+      </Col>
+      <Col>
+      <Form.Group className="mb-3" controlId="formBasicSport">
+        <Form.Label style={{color: "white"}}>Sport WIP</Form.Label>
+        <Form.Select onChange={(e)=> {setSport(e.target.value); setVisible(false)}} value={sportValue}>
+          <option>NBA</option>
+          <option>WNBA</option>
         </Form.Select>
       </Form.Group>
       </Col>
